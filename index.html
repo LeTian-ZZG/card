@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电子校园卡</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #e0f2f1; /* 更接近截图的背景色 */
+            display: flex;
+            flex-direction: column; /* 垂直布局 */
+            justify-content: flex-start; /* 从顶部开始 */
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* 防止横向滚动 */
+        }
+
+        /* 顶部状态栏和导航栏 */
+        .top-bar {
+            width: 100%;
+            height: 40px; /* 模拟手机顶部状态栏高度 */
+            background-color: transparent; /* 背景透明 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: #333; /* 状态栏文字颜色 */
+            font-size: 14px;
+            box-sizing: border-box;
+            position: fixed; /* 固定在顶部 */
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .top-bar .left, .top-bar .right {
+            display: flex;
+            align-items: center;
+        }
+        .top-bar .right span {
+            margin-left: 5px;
+        }
+
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 50px 20px 10px; /* 顶部内边距增加，给状态栏留出空间 */
+            box-sizing: border-box;
+            position: relative;
+            z-index: 999;
+        }
+        .header .close-btn {
+            font-size: 24px;
+            color: #666;
+            text-decoration: none;
+        }
+        .header .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .header .options-btn {
+            font-size: 24px;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* 居中 */
+            margin-top: 10px;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 15px;
+            z-index: 998;
+        }
+        .location-info span {
+            margin-left: 5px;
+        }
+        .location-info img {
+            width: 20px; /* 定位图标大小 */
+            height: 20px;
+        }
+
+
+        .main-container {
+            flex-grow: 1; /* 占据剩余空间 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            position: relative; /* 相对定位 */
+        }
+
+        /* 电子校园卡主体 */
+        .card {
+            background-color: #ffffff;
+            width: 350px; /* 模拟截图中的宽度 */
+            max-width: 90%;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative;
+            z-index: 1; /* 确保卡片在背景之上 */
+        }
+        
+        /* 卡片内背景，来自你提供的网站 */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://xindashuai.github.io/images/index_bg.svg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1; /* 调整透明度使其更淡 */
+            border-radius: 20px;
+            z-index: -1; /* 放在内容之下 */
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .university-info {
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .university-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .university-text {
+            line-height: 1.2;
+        }
+
+        .university-text .zh {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .university-text .en {
+            font-size: 10px;
+            color: #666;
+            white-space: nowrap; /* 防止英文换行 */
+        }
+
+        .qr-code {
+            text-align: right;
+        }
+
+        .qr-code img {
+            width: 60px;
+            height: 60px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .qr-code-label {
+            font-size: 12px;
+            color: #333;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 10px; /* 调整头像与上方内容的间距 */
+            margin-bottom: 25px;
+            border: 1px solid #eee;
+        }
+
+        .info-item {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 18px;
+            text-align: left;
+            padding-left: 15%; /* 调整左边距以匹配截图 */
+        }
+
+        .info-item strong {
+            color: #000;
+            margin-left: 10px;
+        }
+
+        .status-section {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 25px;
+            margin-top: 25px;
+        }
+
+        .status-box {
+            flex: 1;
+            padding: 0 10px; /* 左右内边距 */
+        }
+        
+        .status-box:first-child {
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .status-title {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .status-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .status-subtext {
+            font-size: 14px;
+            color: #28a745;
+            margin-top: 5px;
+        }
+        
+        .balance-icon {
+            font-size: 30px;
+            color: #666;
+            cursor: pointer;
+            padding-top: 10px;
+        }
+
+        /* 底部浮动按钮 */
+        .floating-button {
+            position: fixed; /* 固定位置 */
+            bottom: 30px; /* 距离底部 */
+            right: 30px; /* 距离右侧 */
+            width: 50px;
+            height: 50px;
+            background-color: #4CAF50; /* 绿色 */
+            border-radius: 50%; /* 圆形 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="left">19:29 ✈️</div>
+        <div class="right">
+            <span>!!!</span>
+            <span>📶</span>
+            <span>36</span>
+        </div>
+    </div>
+
+    <div class="header">
+        <a href="#" class="close-btn">✕</a>
+        <div class="title">电子校园卡</div>
+        <a href="#" class="options-btn">···</a>
+    </div>
+
+    <div class="location-info">
+        <img src="https://www.sustech.edu.cn/Uploads/Picture/2016/11/02/s5818d6a8b79ae.png" alt="定位图标"> <span>南方科技大学</span>
+    </div>
+
+    <div class="main-container">
+        <div class="card">
+            <div class="card-header">
+                <div class="university-info">
+                    <img src="https://www.sustech.edu.cn/images/new/sustech-logo-2x.png" alt="大学Logo" class="university-logo">
+                    <div class="university-text">
+                        <div class="zh">南方科技大学</div>
+                        <div class="en">SOUTHERN UNIVERSITY OF SCIENCE AND TECHNOLOGY</div>
+                    </div>
+                </div>
+                <div class="qr-code">
+                    <img src="payment_qr.png" alt="支付码"> <div class="qr-code-label">支付码</div>
+                </div>
+            </div>
+
+            <img src="new_profile.jpg" alt="证件照" class="profile-pic"> <div class="info-item">姓名: <strong>黎俊强</strong></div>
+            <div class="info-item">SID: <strong>30027719</strong></div>
+            <div class="info-item">部门: <strong>机械与能源工程系</strong></div>
+
+            <div class="status-section">
+                <div class="status-box">
+                    <div class="status-title">卡状态</div>
+                    <div class="status-text">正常</div>
+                    <div class="status-subtext">可以入校</div>
+                </div>
+                <div class="status-box">
+                    <div class="status-title">卡内余额</div>
+                    <div class="balance-icon">👁️</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-button">···</div>
+
+</body>
+</html>
